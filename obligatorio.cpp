@@ -7,7 +7,7 @@ struct str_proc{
 	int numero;
 	int arribo;
 	int rafaga;
-
+	int estado; //0: no existe 1: listo, 2: ejecutando, 3: finalizado
 };
 
 typedef struct str_proc proceso;
@@ -19,19 +19,44 @@ struct str_procAT{
 
 typedef struct str_procAT AT_Procesos; // arreglo con tope de procesos
 
+struct str_procListoAT{
+	proceso arr_procesos[MAX_PROCESOS];
+	int tope;
+};
+
+typedef struct str_procListoAT AT_ProcesosListos;
+
 void imprimirProcesos(proceso p){
     printf("------------------------\n");
 	printf("Num Proceso: %d\n", p.numero);
 	printf("Arribo: %d\n", p.arribo);
 	printf("Rafaga: %d\n", p.rafaga);
+	printf("Estado: %d\n", p.estado);
     printf("------------------------\n");
 }
 
-void ordenaProcesos(AT_Procesos &atp){
+void imprimirProcesoEnUso(AT_Procesos &atp){
+	int i = 0;
+	bool ejecuta = false;
+	while (i < atp.tope && ejecuta != true){
+		if (atp.arr_procesos[i].estado == 1){
+			printf("------------------------\n");
+			printf("Ejecutando P%d\n",atp.arr_procesos[i].numero);
+			ejecuta = true;
+			atp.arr_procesos[i].rafaga--; 
+			if(atp.arr_procesos[i].rafaga == 0){
+				atp.arr_procesos[i].estado = 3;
+			}
+		}
+		i++;
+	}
+}
+
+void ordenaRafaga(AT_Procesos &atp){
 	proceso temp;
 	for(int i=0; i<atp.tope-1; i++){
 		for(int j=0;j<atp.tope-1;j++){
-			if(atp.arr_procesos[j].arribo>atp.arr_procesos[j+1].arribo){
+			if(atp.arr_procesos[j].rafaga>atp.arr_procesos[j+1].rafaga){
 				temp = atp.arr_procesos[j];
 				atp.arr_procesos[j] = atp.arr_procesos[j+1];
 				atp.arr_procesos[j+1] = temp;
@@ -39,12 +64,11 @@ void ordenaProcesos(AT_Procesos &atp){
 		}
 	}
 }
-	
+
 main(){
 	AT_Procesos procesos;
 	procesos.tope = 0;
 	proceso p;
-	
 	
 	int num_proc, arribo, rafaga;
 	char enter;
@@ -61,18 +85,19 @@ main(){
 		printf("Ingrese el tiempo de rafaga: ");
 		scanf("%d%c",&p.rafaga,&enter);
 		printf("\n");
-		
+		p.estado = 0;
 		procesos.arr_procesos[procesos.tope] = p;
 		procesos.tope++;
-		
 		num_proc--;
-
 	}
-	ordenaProcesos(procesos);
 	
-    printf("------------------------\n");
-    for (int i=0; i < procesos.tope; i++){
-        imprimirProcesos(procesos.arr_procesos[i]);
-        printf("------------------------\n");
-    }
+	for(int i=0;i < 10; i++){
+		for(int j=0;j<procesos.tope;j++){
+			if(procesos.arr_procesos[j].arribo == i && procesos.arr_procesos[j].estado != 3){
+				procesos.arr_procesos[j].estado = 1;
+			}
+		}
+		ordenaRafaga(procesos);
+		imprimirProcesoEnUso(procesos);
+	}
 }
