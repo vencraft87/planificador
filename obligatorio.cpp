@@ -91,7 +91,7 @@ main(){
 		num_proc--;
 	}
 	
-	for(int i=0;i < 10; i++){
+	for(int i=0;i < 100; i++){ // resolver de otra forma cuanto tiempo revisar procesos.
 		for(int j=0;j<procesos.tope;j++){
 			if(procesos.arr_procesos[j].arribo == i && procesos.arr_procesos[j].estado != 3){
 				procesos.arr_procesos[j].estado = 1;
