@@ -40,7 +40,6 @@ void imprimirProcesoEnUso(AT_Procesos &atp){
 	bool ejecuta = false;
 	while (i < atp.tope && ejecuta != true){
 		if (atp.arr_procesos[i].estado == 1){
-			printf("------------------------\n");
 			printf("Ejecutando P%d\n",atp.arr_procesos[i].numero);
 			ejecuta = true;
 			atp.arr_procesos[i].rafaga--; 
@@ -49,6 +48,9 @@ void imprimirProcesoEnUso(AT_Procesos &atp){
 			}
 		}
 		i++;
+	}
+	if(ejecuta !=true){
+		printf("CPU Libre\n");
 	}
 }
 
@@ -91,13 +93,15 @@ main(){
 		num_proc--;
 	}
 	
-	for(int i=0;i < 100; i++){ // resolver de otra forma cuanto tiempo revisar procesos.
+	for(int i=0;i < 50; i++){ // resolver de otra forma cuanto tiempo revisar procesos.
 		for(int j=0;j<procesos.tope;j++){
 			if(procesos.arr_procesos[j].arribo == i && procesos.arr_procesos[j].estado != 3){
 				procesos.arr_procesos[j].estado = 1;
 			}
 		}
 		ordenaRafaga(procesos);
+		printf("----------------\n");
+		printf("%d: ",i);		
 		imprimirProcesoEnUso(procesos);
 	}
 }
