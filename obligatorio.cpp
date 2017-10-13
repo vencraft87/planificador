@@ -8,7 +8,7 @@ struct str_proc{
 	int numero;
 	int arribo;
 	int rafaga;
-	int estado; //0: no existe 1: listo, 2: ejecutando, 3: finalizado
+	int estado; //0: no existe 1: listo, 2: ejecutando (no se va a usar), 3: finalizado
 };
 
 typedef struct str_proc proceso;
@@ -47,16 +47,19 @@ void imprimirUsoCpu(AT_Procesos &atp){
 	int i = 0;
 	bool ejecuta = false;
 	while (i < atp.tope && ejecuta != true){
+		//Busca primer proceso en cola en estado listo y lo ejecuta.
 		if (atp.arr_procesos[i].estado == 1){
 			printf("Ejecutando P%d\n",atp.arr_procesos[i].numero);
 			ejecuta = true;
-			atp.arr_procesos[i].rafaga--; 
+			atp.arr_procesos[i].rafaga--;
+			//Si el proceso ya se consumio, pasa a finalizado.			
 			if(atp.arr_procesos[i].rafaga == 0){
 				atp.arr_procesos[i].estado = 3;
 			}
 		}
 		i++;
 	}
+	//Si no habia proceso para ejecutar, se muestra estado CPU LIBRE
 	if(ejecuta !=true){
 		printf("CPU Libre\n");
 	}
@@ -80,7 +83,7 @@ main(){
 	procesos.tope = 0;
 	proceso p;
 	p.numero = 1;
-	int num_proc, arribo, rafaga;
+	int num_proc, arribo, rafaga, tiempoCPU = 0;
 	char enter;
 	
 	//Solicita el ingreso de los procesos y los carga en el array
@@ -99,9 +102,10 @@ main(){
 		procesos.tope++;
 		p.numero++;
 		num_proc--;
+		tiempoCPU += p.rafaga;
 	}
 	//Por cada segundo recorre el array de procesos para ponerlos en estado listo
-	for(int i=0;i < 50; i++){ // resolver de otra forma cuanto tiempo revisar procesos.
+	for(int i=0;i < tiempoCPU; i++){ // resolver de otra forma cuanto tiempo revisar procesos.
 		for(int j=0;j<procesos.tope;j++){
 			if(procesos.arr_procesos[j].arribo == i && procesos.arr_procesos[j].estado != 3){
 				procesos.arr_procesos[j].estado = 1;
