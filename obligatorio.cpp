@@ -27,6 +27,19 @@ void imprimirProcesos(proceso p){
     printf("------------------------\n");
 }
 
+void ordenaProcesos(AT_Procesos &atp){
+	proceso temp;
+	for(int i=0; i<atp.tope-1; i++){
+		for(int j=0;j<atp.tope-1;j++){
+			if(atp.arr_procesos[j].arribo>atp.arr_procesos[j+1].arribo){
+				temp = atp.arr_procesos[j];
+				atp.arr_procesos[j] = atp.arr_procesos[j+1];
+				atp.arr_procesos[j+1] = temp;
+			}
+		}
+	}
+}
+	
 main(){
 	AT_Procesos procesos;
 	procesos.tope = 0;
@@ -55,6 +68,7 @@ main(){
 		num_proc--;
 
 	}
+	ordenaProcesos(procesos);
 	
     printf("------------------------\n");
     for (int i=0; i < procesos.tope; i++){
