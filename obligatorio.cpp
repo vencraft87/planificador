@@ -108,6 +108,14 @@ void ordenaProcesos(AT_Procesos &atp){
 	}
 }
 
+double promEspera(AT_Procesos atp){
+	double sumaTiemEspera;
+	for(int i=0;i<atp.tope;i++){
+		sumaTiemEspera += atp.arr_procesos[i].tiempoEspera;
+	}
+	return (sumaTiemEspera / atp.tope);
+}
+
 main(){
 	AT_Procesos procesos;
 	procesos.tope = 0;
@@ -153,4 +161,5 @@ main(){
 		tiempo++;
 	}
 	imprimirProcesos(procesos);
+	printf("Tiempo promedio de espera: %.2f\n", promEspera(procesos));
 }
