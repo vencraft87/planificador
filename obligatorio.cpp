@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#define	MAX_PROCESOS 20
+#define	MAX_PROCESOS 100
 
 // Estructura de los procesos
 struct str_proc{
@@ -27,7 +27,6 @@ struct str_procListoAT{
 	proceso arr_procesos[MAX_PROCESOS];
 	int tope;
 };
-
 typedef struct str_procListoAT AT_ProcesosListos;
 */
 
@@ -43,9 +42,10 @@ void imprimirProcesos(proceso p){
 }
 */
 //Imprime uso de CPU; procesos en ejecucion en un tiempo determinado.
-void imprimirUsoCpu(AT_Procesos &atp){
+bool imprimirUsoCpu(AT_Procesos &atp){
 	int i = 0;
 	bool ejecuta = false;
+	bool finProceso = false;
 	while (i < atp.tope && ejecuta != true){
 		//Busca primer proceso en cola en estado listo y lo ejecuta.
 		if (atp.arr_procesos[i].estado == 1){
@@ -55,6 +55,7 @@ void imprimirUsoCpu(AT_Procesos &atp){
 			//Si el proceso ya se consumio, pasa a finalizado.			
 			if(atp.arr_procesos[i].rafaga == 0){
 				atp.arr_procesos[i].estado = 3;
+				finProceso = true;
 			}
 		}
 		i++;
@@ -63,7 +64,9 @@ void imprimirUsoCpu(AT_Procesos &atp){
 	if(ejecuta !=true){
 		printf("CPU Libre\n");
 	}
+	return finProceso;
 }
+
 //Ordena procesos segun la rafaga
 void ordenaRafaga(AT_Procesos &atp){
 	proceso temp;
@@ -83,7 +86,7 @@ main(){
 	procesos.tope = 0;
 	proceso p;
 	p.numero = 1;
-	int num_proc, arribo, rafaga, tiempoCPU = 0;
+	int num_proc, procesosTerminados = 0, arribo, rafaga, tiempoCPU = 0, tiempo = 0;
 	char enter;
 	
 	//Solicita el ingreso de los procesos y los carga en el array
@@ -105,16 +108,20 @@ main(){
 		tiempoCPU += p.rafaga;
 	}
 	//Por cada segundo recorre el array de procesos para ponerlos en estado listo
-	for(int i=0;i < tiempoCPU; i++){ // resolver de otra forma cuanto tiempo revisar procesos.
+
+	while(procesosTerminados != procesos.tope){ // resolver de otra forma cuanto tiempo revisar procesos.
 		for(int j=0;j<procesos.tope;j++){
-			if(procesos.arr_procesos[j].arribo == i && procesos.arr_procesos[j].estado != 3){
+			if(procesos.arr_procesos[j].arribo == tiempo && procesos.arr_procesos[j].estado != 3){
 				procesos.arr_procesos[j].estado = 1;
 			}
 		}
 		//ordena procesos por rafaga, y ejecuta los listos
 		ordenaRafaga(procesos);
 		printf("----------------\n");
-		printf("%d: ",i);		
-		imprimirUsoCpu(procesos);
+		printf("%d: ",tiempo);		
+		if(imprimirUsoCpu(procesos)){
+			procesosTerminados++;
+		}
+		tiempo++;
 	}
 }
