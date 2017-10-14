@@ -111,17 +111,17 @@ void ordenaProcesos(AT_Procesos &atp){
 		}
 	}
 }
-//Devuelve resultado final Tiempo de Espera Pr
-double promEspera(AT_Procesos atp){
-	double sumaTiemEspera;
+//Devuelve resultado final Tiempo de Espera Promedio
+float promEspera(AT_Procesos atp){
+	float sumaTiemEspera;
 	for(int i=0;i<atp.tope;i++){
 		sumaTiemEspera += atp.arr_procesos[i].tiempoEspera;
 	}
 	return (sumaTiemEspera / atp.tope);
 }
-
-double promRetorno(AT_Procesos atp){
-	double sumaTiemRetorno;
+//Devuelve resultado final Tiempo de Espera Promedio
+float promRetorno(AT_Procesos atp){
+	float sumaTiemRetorno;
 	for(int i=0;i<atp.tope;i++){
 		sumaTiemRetorno += atp.arr_procesos[i].tiempoRetorno;
 	}
@@ -159,17 +159,17 @@ void ejecPorSegundo(AT_Procesos &atp){
 	int procesosTerminados = 0, tiempo = 0;
 	char enter;
 	//Inicia en cero y por cada segundo recorre el array de procesos para ponerlos en estado listo, termina cuando todos los procesos finalizan
-	while(procesosTerminados != procesos.tope){ // podria resolverse de otra forma...
-		for(int j=0;j<procesos.tope;j++){
-			if(procesos.arr_procesos[j].arribo == tiempo || procesos.arr_procesos[j].estado == 2){
-				procesos.arr_procesos[j].estado = 1;
+	while(procesosTerminados != atp.tope){ // podria resolverse de otra forma...
+		for(int j=0;j<atp.tope;j++){
+			if(atp.arr_procesos[j].arribo == tiempo || atp.arr_procesos[j].estado == 2){
+				atp.arr_procesos[j].estado = 1;
 			}
 		}
 		//ordena procesos por rafaga, y ejecuta los listos
-		ordenaProcesos(procesos);
+		ordenaProcesos(atp);
 		printf("----------------\n");
 		printf("%d: ",tiempo);		
-		if(imprimirUsoCpu(procesos)){
+		if(imprimirUsoCpu(atp)){
 			procesosTerminados++;
 		}
 		tiempo++;
@@ -184,6 +184,6 @@ main(){
 	ejecPorSegundo(procesos);
 	imprimirProcesos(procesos);
 	
-	printf("Tiempo promedio de espera: %.2f\n\n", promEspera(procesos));
-	printf("Tiempo promedio de retorno: %.2f\n", promRetorno(procesos));
+	printf("Tiempo promedio de espera: %g\n\n", promEspera(procesos));
+	printf("Tiempo promedio de retorno: %g\n", promRetorno(procesos));
 }
