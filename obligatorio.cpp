@@ -10,7 +10,7 @@ struct str_proc{
 	int rafaga;
 	int estado; //0: no existe 1: listo, 2: ejecutando (no se va a usar), 3: finalizado
 	int tiempoEspera;
-
+	int tiempoRetorno;
 };
 
 typedef struct str_proc proceso;
@@ -39,7 +39,7 @@ void imprimirProcesos(AT_Procesos atp){
 		printf("------------------------\n");
 		printf("Proceso %d:\n\n", atp.arr_procesos[i].numero);
 		printf("Tiempo de espera: %d\n", atp.arr_procesos[i].tiempoEspera);
-		printf("Tiempo de retorno: \n");
+		printf("Tiempo de retorno: %d\n", atp.arr_procesos[i].tiempoRetorno);
 		printf("------------------------\n");	
 	}
 }
@@ -70,17 +70,21 @@ bool imprimirUsoCpu(AT_Procesos &atp){
 	if(ejecuta !=true){
 		printf("CPU Libre\n");
 	}
+	//Recorro procesos para sumar tiempo de espera y retorno, vuelvo a listo  
+	//el proceso anterior que se estuviera ejecutando 
 	for(int i=0; i<atp.tope; i++){
 		if((atp.arr_procesos[i].estado == 2) && (nombreProcEjecutando != atp.arr_procesos[i].numero)){
 			atp.arr_procesos[i].estado = 1;
-		}
-	}
-	
-	//Recorro procesos y aumento tiempo de espera de los listos.
-	for (int i=0; i<atp.tope; i++){
-		if (atp.arr_procesos[i].estado == 1){
 			atp.arr_procesos[i].tiempoEspera++;
-		}
+			atp.arr_procesos[i].tiempoRetorno++;
+		}else if(atp.arr_procesos[i].estado == 1){
+			atp.arr_procesos[i].estado = 1;
+			atp.arr_procesos[i].tiempoEspera++;
+			atp.arr_procesos[i].tiempoRetorno++;
+		}else if(atp.arr_procesos[i].estado == 2){
+			atp.arr_procesos[i].tiempoRetorno++;
+		}	
+
 	}
 	return finProceso;
 }
@@ -107,7 +111,7 @@ void ordenaProcesos(AT_Procesos &atp){
 		}
 	}
 }
-
+//Devuelve resultado final Tiempo de Espera Pr
 double promEspera(AT_Procesos atp){
 	double sumaTiemEspera;
 	for(int i=0;i<atp.tope;i++){
@@ -116,13 +120,20 @@ double promEspera(AT_Procesos atp){
 	return (sumaTiemEspera / atp.tope);
 }
 
+double promRetorno(AT_Procesos atp){
+	double sumaTiemRetorno;
+	for(int i=0;i<atp.tope;i++){
+		sumaTiemRetorno += atp.arr_procesos[i].tiempoRetorno;
+	}
+	return (sumaTiemRetorno / atp.tope);
+}
+
 main(){
 	AT_Procesos procesos;
 	procesos.tope = 0;
 	proceso p;
 	p.numero = 1;
-	p.tiempoEspera = 0;
-	int num_proc, procesosTerminados = 0, arribo, rafaga, tiempoCPU = 0, tiempo = 0;
+	int num_proc, procesosTerminados = 0, arribo, rafaga, tiempo = 0;
 	char enter;
 	
 	//Solicita el ingreso de los procesos y los carga en el array
@@ -137,11 +148,12 @@ main(){
 		scanf("%d%c",&p.rafaga,&enter);
 		printf("\n");
 		p.estado = 0;
+		p.tiempoEspera = 0;
+		p.tiempoRetorno = 1;
 		procesos.arr_procesos[procesos.tope] = p;
 		procesos.tope++;
 		p.numero++;
 		num_proc--;
-		tiempoCPU += p.rafaga;
 	}
 	
 	//Inicia en cero y por cada segundo recorre el array de procesos para ponerlos en estado listo, termina cuando todos los procesos finalizan
@@ -161,5 +173,6 @@ main(){
 		tiempo++;
 	}
 	imprimirProcesos(procesos);
-	printf("Tiempo promedio de espera: %.2f\n", promEspera(procesos));
+	printf("Tiempo promedio de espera: %.2f\n\n", promEspera(procesos));
+	printf("Tiempo promedio de retorno: %.2f\n", promRetorno(procesos));
 }
