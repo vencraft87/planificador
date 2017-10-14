@@ -128,15 +128,12 @@ double promRetorno(AT_Procesos atp){
 	return (sumaTiemRetorno / atp.tope);
 }
 
-main(){
-	AT_Procesos procesos;
-	procesos.tope = 0;
+//Solicita al usuario los Procesos a ingresar y los carga en el array de procesos.
+void solicitaProcesos(AT_Procesos &atp){	
 	proceso p;
 	p.numero = 1;
-	int num_proc, procesosTerminados = 0, arribo, rafaga, tiempo = 0;
+	int num_proc,arribo,rafaga;
 	char enter;
-	
-	//Solicita el ingreso de los procesos y los carga en el array
 	printf("Seleccione cantidad de procesos a ejecutar: ");
 	scanf("%d%c",&num_proc,&enter);
 	printf("\n");
@@ -150,12 +147,17 @@ main(){
 		p.estado = 0;
 		p.tiempoEspera = 0;
 		p.tiempoRetorno = 1;
-		procesos.arr_procesos[procesos.tope] = p;
-		procesos.tope++;
+		atp.arr_procesos[atp.tope] = p;
+		atp.tope++;
 		p.numero++;
 		num_proc--;
 	}
-	
+}
+
+//Acciones que se realizan por cada segundo hasta que finalicen todos los procesos ingresados.
+void ejecPorSegundo(AT_Procesos &atp){
+	int procesosTerminados = 0, tiempo = 0;
+	char enter;
 	//Inicia en cero y por cada segundo recorre el array de procesos para ponerlos en estado listo, termina cuando todos los procesos finalizan
 	while(procesosTerminados != procesos.tope){ // podria resolverse de otra forma...
 		for(int j=0;j<procesos.tope;j++){
@@ -172,7 +174,16 @@ main(){
 		}
 		tiempo++;
 	}
+}
+
+main(){
+	AT_Procesos procesos;
+	procesos.tope = 0;
+
+	solicitaProcesos(procesos);
+	ejecPorSegundo(procesos);
 	imprimirProcesos(procesos);
+	
 	printf("Tiempo promedio de espera: %.2f\n\n", promEspera(procesos));
 	printf("Tiempo promedio de retorno: %.2f\n", promRetorno(procesos));
 }
