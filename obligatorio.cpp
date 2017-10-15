@@ -235,13 +235,16 @@ void imprimirGantt(AT_Gantt &gantt){
 	}
 	printf("-\n");
 	for(int i = 0; i < gantt.tope; i++){
-		if(i == 0){
+		if(i == 0 && gantt.tope == 1){ //Para el caso que llegue un solo proceso
 			printf("%d   ",gantt.arr_gantt[i].tiempoEjProceso);
-		}else if(gantt.arr_gantt[i].numProceso != gantt.arr_gantt[i-1].numProceso){
+			printf("%d",gantt.arr_gantt[i].tiempoEjProceso+1);
+		}else if(i == 0 && gantt.tope){	//Caso para primer proceso
 			printf("%d   ",gantt.arr_gantt[i].tiempoEjProceso);
-		}else if(i == gantt.tope-1){
-			printf("   %d",gantt.arr_gantt[i].tiempoEjProceso+1);
-		}else{
+		}else if(gantt.arr_gantt[i].numProceso != gantt.arr_gantt[i-1].numProceso){ //Caso para cuando llega un proceso diferente
+			printf("%d   ",gantt.arr_gantt[i].tiempoEjProceso);
+		}else if(i == gantt.tope-1){ //Numero final en el gannt
+			printf("    %d",gantt.arr_gantt[i].tiempoEjProceso+1);
+		}else{ //Casos en los que sigue el mismo proceso
 			printf("    ");
 		}
 	}
@@ -250,7 +253,7 @@ void imprimirGantt(AT_Gantt &gantt){
 	
 //Devuelve resultado final Tiempo de Espera Promedio
 float promEspera(AT_Procesos atp){
-	float sumaTiemEspera;
+	float sumaTiemEspera = 0;
 	for(int i=0;i<atp.tope;i++){
 		sumaTiemEspera += atp.arr_procesos[i].tiempoEspera;
 	}
@@ -259,7 +262,7 @@ float promEspera(AT_Procesos atp){
 
 //Devuelve resultado final Tiempo de Retorno Promedio
 float promRetorno(AT_Procesos atp){
-	float sumaTiemRetorno;
+	float sumaTiemRetorno = 0;
 	for(int i=0;i<atp.tope;i++){
 		sumaTiemRetorno += atp.arr_procesos[i].tiempoRetorno;
 	}
