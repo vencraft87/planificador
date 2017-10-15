@@ -8,7 +8,7 @@ struct str_proc{
 	int numero;
 	int arribo;
 	int rafaga;
-	int estado; //0: no existe 1: listo, 2: ejecutando (no se va a usar), 3: finalizado
+	int estado; //0: no existe 1: listo, 2: ejecutando, 3: finalizado
 	int tiempoEspera;
 	int tiempoRetorno;
 };
@@ -77,15 +77,22 @@ bool imprimirUsoCpu(AT_Procesos &atp, AT_Gantt &atgantt, int tiempo){
 			//Agrego proceso al Gantt
 			atgantt.arr_gantt[atgantt.tope].numProceso = atp.arr_procesos[i].numero;
 			atgantt.arr_gantt[atgantt.tope].tiempoEjProceso = tiempo;
-			printf("NumProceso %d\n",atgantt.arr_gantt[atgantt.tope].numProceso);
-			printf("TiempoEjProceso %d\n",atgantt.arr_gantt[atgantt.tope].tiempoEjProceso);
+			//printf("NumProceso %d\n",atgantt.arr_gantt[atgantt.tope].numProceso);
+			//printf("TiempoEjProceso %d\n",atgantt.arr_gantt[atgantt.tope].tiempoEjProceso);
 			atgantt.tope++;
 		}
 		i++;
 	}
 	//Si no habia proceso para ejecutar, se muestra estado CPU LIBRE
-	if(ejecuta !=true){
+	if(ejecuta != true){
+		atgantt.arr_gantt[atgantt.tope].numProceso = 0;
+		atgantt.arr_gantt[atgantt.tope].tiempoEjProceso = tiempo;
+		atgantt.tope++;
+		
 		//printf("CPU Libre\n");
+		//printf("Tiempo: %d\n", tiempo);
+		//printf("NumProceso %d\n",atgantt.arr_gantt[atgantt.tope-1].numProceso);
+		//printf("TiempoEjProceso %d\n",atgantt.arr_gantt[atgantt.tope-1].tiempoEjProceso);
 	}
 	//Recorro procesos para sumar tiempo de espera y retorno, vuelvo a listo  
 	//el proceso anterior que se estuviera ejecutando 
@@ -181,29 +188,29 @@ void ejecPorSegundo(AT_Procesos &atp, AT_Gantt &atgantt){
 void imprimirGantt(AT_Gantt &gantt){
 	printf("\n\n");
 	for(int i = 0; i < gantt.tope; i++){
-		//if(i == 0){
-			printf("----");
-		//}else if(gantt.arr_gantt[i].numProceso != gantt.arr_gantt[i-1].numProceso){
-		//	printf("----");
-		//}
+		printf("----");
 	}
 	printf("-\n");
 	for(int i = 0; i < gantt.tope; i++){
 		if(i == 0){
-			printf("|P%d ",gantt.arr_gantt[i].numProceso);
+			if(gantt.arr_gantt[i].numProceso == 0){
+				printf("|LIB");
+			}else{
+				printf("|P%d ",gantt.arr_gantt[i].numProceso);
+			}
 		}else if(gantt.arr_gantt[i].numProceso != gantt.arr_gantt[i-1].numProceso){
-			printf("|P%d ",gantt.arr_gantt[i].numProceso);
+			if(gantt.arr_gantt[i].numProceso == 0){
+				printf("|LIB");
+			}else{
+				printf("|P%d ",gantt.arr_gantt[i].numProceso);
+			}
 		}else{
 			printf("    ");
 		}
 	}
 	printf("|\n");
 	for(int i = 0; i < gantt.tope; i++){
-		//if(i == 0){
-			printf("----");
-		//}else if(gantt.arr_gantt[i].numProceso != gantt.arr_gantt[i-1].numProceso){
-		//	printf("----");
-		//}
+		printf("----");
 	}
 	printf("-\n");
 	for(int i = 0; i < gantt.tope; i++){
