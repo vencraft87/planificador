@@ -236,17 +236,52 @@ float promRetorno(AT_Procesos atp){
 	}
 	return (sumaTiemRetorno / atp.tope);
 }
-	
+
+void imprimirBienvenida() {
+	printf ( "---------------------------------------------------------\n" );
+	printf ( "------     Obligatorio 1 - Sistemas Operativos     ------\n" );
+	printf ( "------        Tecnologo en Informatica             ------\n" );
+	printf ( "------                 Grupo 4                     ------\n" );
+	printf ( "------  Planificador de Procesos SJF Expropiativo  ------\n" );
+	printf ( "---------------------------------------------------------\n" );
+}
+
+//Mensaje de despedida
+void imprimirDespedida(){
+	printf("\n\n¡Muchas gracias por usar nuestro programa!\n\n\n");
+	printf("Emmanuel Picca\nLeonardo Faller\nTomas Garcia\nGerman Arenaza\n");
+}	
+
 main(){
 	AT_Procesos procesos;
-	procesos.tope = 0;
 	AT_Gantt gantt;
-	gantt.tope = 0;
+	bool salir = false;
+	
+	imprimirBienvenida();
+	while (!salida){
+		procesos.tope = 0;
+		gantt.tope = 0;
 
-	solicitaProcesos(procesos);
-	ejecPorSegundo(procesos,gantt);
-	imprimirProcesos(procesos);
-	imprimirGantt(gantt);
-	printf("Tiempo promedio de espera: %g\n\n", promEspera(procesos));
-	printf("Tiempo promedio de retorno: %g\n", promRetorno(procesos));
+		solicitaProcesos(procesos);
+		ejecPorSegundo(procesos,gantt);
+		imprimirProcesos(procesos);
+		imprimirGantt(gantt);
+		printf("Tiempo promedio de espera: %g\n\n", promEspera(procesos));
+		printf("Tiempo promedio de retorno: %g\n\n\n", promRetorno(procesos));
+
+		char opcionSalida[2];
+		printf("¿Desea continuar? (S/N): ");
+		scanf("%s", opcionSalida);
+		switch (opcionSalida[0]){ //sigue derecho si se presiona cualquier otra tecla
+			case 'S': case 's':{
+				salida = false;
+				break;
+			}
+			case 'N': case 'n':{
+				salida = true;
+				imprimirDespedida();
+				break;
+			}
+		}
+	}
 }
