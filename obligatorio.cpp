@@ -213,20 +213,20 @@ void imprimirGantt(AT_Gantt &gantt){
 	}
 	printf("-\n");
 	for(int i = 0; i < gantt.tope; i++){
-		if(i == 0){
-			if(gantt.arr_gantt[i].numProceso == 0){
+		if(i == 0){ //Caso para primer proceso
+			if(gantt.arr_gantt[i].numProceso == 0){ //Si no hubo proceso en cpu
 				printf("|LIB");
 			}else{
-				printf("|P%d ",gantt.arr_gantt[i].numProceso);
+				printf("|P%d ",gantt.arr_gantt[i].numProceso); //Si hubo proceso en cpu
 			}
-		}else if(gantt.arr_gantt[i].numProceso != gantt.arr_gantt[i-1].numProceso){
-			if(gantt.arr_gantt[i].numProceso == 0){
+		}else if(gantt.arr_gantt[i].numProceso != gantt.arr_gantt[i-1].numProceso){//Caso para cuando llega un proceso diferente o termina el actual
+			if(gantt.arr_gantt[i].numProceso == 0){ //Si no hubo proceso en cpu
 				printf("|LIB");
-			}else{
-				printf("|P%d ",gantt.arr_gantt[i].numProceso);
+			}else{ //Si hubo proceso en cpu
+				printf("|P%d ",gantt.arr_gantt[i].numProceso); 
 			}
-		}else{
-			printf("    ");
+		}else{ // Casos en los que sigue el mismo proceso
+			printf("    "); 
 		}
 	}
 	printf("|\n");
@@ -235,19 +235,16 @@ void imprimirGantt(AT_Gantt &gantt){
 	}
 	printf("-\n");
 	for(int i = 0; i < gantt.tope; i++){
-		if(i == 0 && gantt.tope == 1){ //Para el caso que llegue un solo proceso
-			printf("%d   ",gantt.arr_gantt[i].tiempoEjProceso);
-			printf("%d",gantt.arr_gantt[i].tiempoEjProceso+1);
-		}else if(i == 0 && gantt.tope){	//Caso para primer proceso
+		if(i == 0){	//Caso para primer proceso
 			printf("%d   ",gantt.arr_gantt[i].tiempoEjProceso);
 		}else if(gantt.arr_gantt[i].numProceso != gantt.arr_gantt[i-1].numProceso){ //Caso para cuando llega un proceso diferente
 			printf("%d   ",gantt.arr_gantt[i].tiempoEjProceso);
-		}else if(i == gantt.tope-1){ //Numero final en el gannt
-			printf("    %d",gantt.arr_gantt[i].tiempoEjProceso+1);
 		}else{ //Casos en los que sigue el mismo proceso
 			printf("    ");
 		}
 	}
+	//Imprime el numero final del Gantt
+	printf("%d",gantt.arr_gantt[gantt.tope-1].tiempoEjProceso+1);
 	printf("\n\n\n");
 }
 	
