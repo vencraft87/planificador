@@ -156,23 +156,52 @@ void solicitaProcesos(AT_Procesos &atp){
 	p.numero = 1;
 	int num_proc,arribo,rafaga;
 	char enter;
-	printf("Seleccione cantidad de procesos a ejecutar: ");
-	scanf("%d%c",&num_proc,&enter);
+	bool okProceso = false, okArribo = false, okBurst = false;
+	do{
+		printf("Seleccione cantidad de procesos a ejecutar: ");
+		scanf("%d%c",&num_proc,&enter);
+		if(num_proc > 0){
+			okProceso = true;
+		}
+		else{
+			printf("Error: La cantidad total de procesos a ejecutar debe ser mayor a cero.\n\n");
+		}
+	}while(!okProceso);
+	
 	printf("\n");
+
 	while (num_proc > 0){
 		printf("Proceso %d:\n\n",p.numero);
-		printf("Ingrese el tiempo de arribo: ");
-		scanf("%d%c",&p.arribo,&enter);
-		printf("Ingrese el tiempo de rafaga: ");
-		scanf("%d%c",&p.rafaga,&enter);
-		printf("\n");
-		p.estado = 0;
-		p.tiempoEspera = 0;
-		p.tiempoRetorno = 1;
-		atp.arr_procesos[atp.tope] = p;
-		atp.tope++;
-		p.numero++;
-		num_proc--;
+
+		do{
+			printf("Ingrese el tiempo de arribo: ");
+			scanf("%d%c",&p.arribo,&enter);
+			if(p.arribo >= 0){
+				okArribo = true;
+			}
+			else{
+				printf("Error: El tiempo de arribo debe ser mayor o igual a cero.\n\n");
+			}
+		}while(!okArribo);
+
+		do{
+			printf("Ingrese el tiempo de rafaga: ");
+			scanf("%d%c",&p.rafaga,&enter);
+			if(p.rafaga > 0){
+				okBurst = true;
+				printf("\n");
+				p.estado = 0;
+				p.tiempoEspera = 0;
+				p.tiempoRetorno = 1;
+				atp.arr_procesos[atp.tope] = p;
+				atp.tope++;
+				p.numero++;
+				num_proc--;
+			}
+			else{
+				printf("Error: El tiempo de rafaga debe ser mayor a cero\n\n");
+			}
+		}while(!okBurst);
 	}
 }
 
@@ -255,7 +284,7 @@ void imprimirDespedida(){
 main(){
 	AT_Procesos procesos;
 	AT_Gantt gantt;
-	bool salir = false;
+	bool salida = false;
 	
 	imprimirBienvenida();
 	while (!salida){
