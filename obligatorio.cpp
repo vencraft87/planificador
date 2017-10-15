@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#define	MAX_PROCESOS 20
+#define	MAX_INT 1000
 
 // Estructura de los procesos
 struct str_proc{
@@ -12,16 +12,27 @@ struct str_proc{
 	int tiempoEspera;
 	int tiempoRetorno;
 };
-
 typedef struct str_proc proceso;
 
 //Arreglo que contiene a cada proceso
 struct str_procAT{
-	proceso arr_procesos[MAX_PROCESOS];
+	proceso arr_procesos[MAX_INT];
 	int tope;
 };
-
 typedef struct str_procAT AT_Procesos; // arreglo con tope de procesos
+
+//Arreglo para hacerr gantt
+struct str_gantt{
+	int numProceso;
+	int tiempoEjProceso;
+};
+typedef struct str_gantt gantt;
+
+struct str_ganttAT{
+	gantt arr_gantt[MAX_INT];
+	int tope;
+};
+typedef struct str_ganttAT AT_Gantt;
 
 void imprimirProcesos(AT_Procesos atp){
 	proceso temp;
@@ -45,7 +56,7 @@ void imprimirProcesos(AT_Procesos atp){
 }
   
 //Imprime uso de CPU; procesos en ejecucion en un tiempo determinado.
-bool imprimirUsoCpu(AT_Procesos &atp){
+bool imprimirUsoCpu(AT_Procesos &atp, AT_Gantt &atgantt, int tiempo){
 	int i=0;
 	bool ejecuta = false;
 	bool finProceso = false;
@@ -53,7 +64,7 @@ bool imprimirUsoCpu(AT_Procesos &atp){
 	while (i < atp.tope && ejecuta != true){
 		//Busca primer proceso en cola en estado listo y lo ejecuta.
 		if (atp.arr_procesos[i].estado == 1 || atp.arr_procesos[i].estado == 2){
-			printf("Ejecutando P%d\n",atp.arr_procesos[i].numero);
+			//printf("Ejecutando P%d\n",atp.arr_procesos[i].numero);
 			atp.arr_procesos[i].estado = 2;
 			ejecuta = true;
 			atp.arr_procesos[i].rafaga--;
@@ -63,12 +74,18 @@ bool imprimirUsoCpu(AT_Procesos &atp){
 				atp.arr_procesos[i].estado = 3;
 				finProceso = true;
 			}
+			//Agrego proceso al Gantt
+			atgantt.arr_gantt[atgantt.tope].numProceso = atp.arr_procesos[i].numero;
+			atgantt.arr_gantt[atgantt.tope].tiempoEjProceso = tiempo;
+			printf("NumProceso %d\n",atgantt.arr_gantt[atgantt.tope].numProceso);
+			printf("TiempoEjProceso %d\n",atgantt.arr_gantt[atgantt.tope].tiempoEjProceso);
+			atgantt.tope++;
 		}
 		i++;
 	}
 	//Si no habia proceso para ejecutar, se muestra estado CPU LIBRE
 	if(ejecuta !=true){
-		printf("CPU Libre\n");
+		//printf("CPU Libre\n");
 	}
 	//Recorro procesos para sumar tiempo de espera y retorno, vuelvo a listo  
 	//el proceso anterior que se estuviera ejecutando 
@@ -111,22 +128,6 @@ void ordenaProcesos(AT_Procesos &atp){
 		}
 	}
 }
-//Devuelve resultado final Tiempo de Espera Promedio
-float promEspera(AT_Procesos atp){
-	float sumaTiemEspera;
-	for(int i=0;i<atp.tope;i++){
-		sumaTiemEspera += atp.arr_procesos[i].tiempoEspera;
-	}
-	return (sumaTiemEspera / atp.tope);
-}
-//Devuelve resultado final Tiempo de Espera Promedio
-float promRetorno(AT_Procesos atp){
-	float sumaTiemRetorno;
-	for(int i=0;i<atp.tope;i++){
-		sumaTiemRetorno += atp.arr_procesos[i].tiempoRetorno;
-	}
-	return (sumaTiemRetorno / atp.tope);
-}
 
 //Solicita al usuario los Procesos a ingresar y los carga en el array de procesos.
 void solicitaProcesos(AT_Procesos &atp){	
@@ -155,7 +156,7 @@ void solicitaProcesos(AT_Procesos &atp){
 }
 
 //Acciones que se realizan por cada segundo hasta que finalicen todos los procesos ingresados.
-void ejecPorSegundo(AT_Procesos &atp){
+void ejecPorSegundo(AT_Procesos &atp, AT_Gantt &atgantt){
 	int procesosTerminados = 0, tiempo = 0;
 	char enter;
 	//Inicia en cero y por cada segundo recorre el array de procesos para ponerlos en estado listo, termina cuando todos los procesos finalizan
@@ -167,23 +168,86 @@ void ejecPorSegundo(AT_Procesos &atp){
 		}
 		//ordena procesos por rafaga, y ejecuta los listos
 		ordenaProcesos(atp);
-		printf("----------------\n");
-		printf("%d: ",tiempo);		
-		if(imprimirUsoCpu(atp)){
+		//printf("----------------\n");
+		//printf("%d: ",tiempo);		
+		if(imprimirUsoCpu(atp,atgantt,tiempo)){
 			procesosTerminados++;
 		}
 		tiempo++;
 	}
 }
 
+//Imprime Gantt
+void imprimirGantt(AT_Gantt &gantt){
+	printf("\n\n");
+	for(int i = 0; i < gantt.tope; i++){
+		//if(i == 0){
+			printf("----");
+		//}else if(gantt.arr_gantt[i].numProceso != gantt.arr_gantt[i-1].numProceso){
+		//	printf("----");
+		//}
+	}
+	printf("-\n");
+	for(int i = 0; i < gantt.tope; i++){
+		if(i == 0){
+			printf("|P%d ",gantt.arr_gantt[i].numProceso);
+		}else if(gantt.arr_gantt[i].numProceso != gantt.arr_gantt[i-1].numProceso){
+			printf("|P%d ",gantt.arr_gantt[i].numProceso);
+		}else{
+			printf("    ");
+		}
+	}
+	printf("|\n");
+	for(int i = 0; i < gantt.tope; i++){
+		//if(i == 0){
+			printf("----");
+		//}else if(gantt.arr_gantt[i].numProceso != gantt.arr_gantt[i-1].numProceso){
+		//	printf("----");
+		//}
+	}
+	printf("-\n");
+	for(int i = 0; i < gantt.tope; i++){
+		if(i == 0){
+			printf("%d   ",gantt.arr_gantt[i].tiempoEjProceso);
+		}else if(gantt.arr_gantt[i].numProceso != gantt.arr_gantt[i-1].numProceso){
+			printf("%d   ",gantt.arr_gantt[i].tiempoEjProceso);
+		}else if(i == gantt.tope-1){
+			printf("   %d",gantt.arr_gantt[i].tiempoEjProceso+1);
+		}else{
+			printf("    ");
+		}
+	}
+	printf("\n\n\n");
+}
+	
+//Devuelve resultado final Tiempo de Espera Promedio
+float promEspera(AT_Procesos atp){
+	float sumaTiemEspera;
+	for(int i=0;i<atp.tope;i++){
+		sumaTiemEspera += atp.arr_procesos[i].tiempoEspera;
+	}
+	return (sumaTiemEspera / atp.tope);
+}
+
+//Devuelve resultado final Tiempo de Espera Promedio
+float promRetorno(AT_Procesos atp){
+	float sumaTiemRetorno;
+	for(int i=0;i<atp.tope;i++){
+		sumaTiemRetorno += atp.arr_procesos[i].tiempoRetorno;
+	}
+	return (sumaTiemRetorno / atp.tope);
+}
+	
 main(){
 	AT_Procesos procesos;
 	procesos.tope = 0;
+	AT_Gantt gantt;
+	gantt.tope = 0;
 
 	solicitaProcesos(procesos);
-	ejecPorSegundo(procesos);
+	ejecPorSegundo(procesos,gantt);
 	imprimirProcesos(procesos);
-	
+	imprimirGantt(gantt);
 	printf("Tiempo promedio de espera: %g\n\n", promEspera(procesos));
 	printf("Tiempo promedio de retorno: %g\n", promRetorno(procesos));
 }
